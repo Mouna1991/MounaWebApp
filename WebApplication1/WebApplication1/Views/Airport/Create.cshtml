@@ -1,0 +1,76 @@
+﻿@using WebApplication1.Models
+@using WebApplication1.Controllers
+@model Country
+
+    @{
+    ViewBag.Title = "Index";
+    }
+
+
+@using (Html.BeginForm("Create", "Airport", FormMethod.Post, new { htmlAttributes = new { @class = "form-horizontal", role = "form" } }))
+{
+    
+
+
+
+    <h2>Airport List</h2>
+@Html.Label("Airports", "Airports")
+    <select name="Airports" id="Airports">
+        @foreach (var airport in ViewBag.EuropeanAirports)
+        {
+        <option value="@(airport.name)">@(airport.name)</option>
+        }
+    </select>
+
+@Html.Label("Country", "Country")
+
+
+    <select onclick="CountrySelection()" name="Countries" id="Countries">
+        @foreach (var country in ViewBag.countries)
+        {
+            <option value="@(country.country)">@(country.country)</option>
+        }
+    </select>
+}
+
+
+
+
+<script>
+    function CountrySelection() {
+        var action = '@Url.Action("Create")'; // action must be between quotes
+        var element = document.getElementById("Countries");
+        var country = element.options[element.selectedIndex].value;
+        console.log(country);
+       
+        $.ajax({
+            url:"/Airport/Create",
+            headers: {
+                "name":"from-feed"
+            },
+            data: "country=" + country ,
+            type: "POST",
+
+             success: function(data){
+                 // code here
+                 var selectHtml = "<select>";
+
+                 for (var i in data) {
+
+                     console.log(data[i].name );
+
+                     selectHtml += '<option value="' + data[i].name + '">' + data[i].name + '</option>';
+                 }
+
+                 selectHtml += '</select>';
+
+                 document.getElementById("Airports").innerHTML = selectHtml;
+            },
+            error: function(passParams){
+            // code here
+            }
+           
+        });
+    }
+</script>
+
